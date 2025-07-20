@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RICEMAKERS - Premium Rice Delivery</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#22c55e',secondary:'#f59e0b'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#317EFB">
+
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+.marquee {
+animation: marquee 15s linear infinite;
+}
+@keyframes marquee {
+0% { transform: translateX(100%); }
+100% { transform: translateX(-100%); }
+}
+.slider-container {
+scroll-behavior: smooth;
+}
+.notification-bar {
+animation: slideDown 0.5s ease-out;
+}
+@keyframes slideDown {
+from { transform: translateY(-100%); }
+to { transform: translateY(0); }
+}
+</style>
+</head>
+<body class="bg-gray-50">
+<!-- Notification Bar -->
+<div id="notification-bar" class="notification-bar fixed top-0 left-0 right-0 bg-primary text-white px-4 py-3 z-50">
+<div class="flex items-center justify-between max-w-sm mx-auto">
+<span class="text-sm font-medium">We are delivering only in Singanallur</span>
+<button id="close-notification" class="w-6 h-6 flex items-center justify-center">
+<i class="ri-close-line text-lg"></i>
+</button>
+</div>
+</div>
+
+<!-- Navigation Bar -->
+<nav class="fixed top-12 left-0 right-0 bg-white shadow-sm z-40" id="navbar">
+<div class="max-w-sm mx-auto px-4 py-3">
+<div class="flex items-center justify-between">
+<button id="menu-button" class="w-8 h-8 flex items-center justify-center">
+<i class="ri-menu-line text-xl text-gray-700"></i>
+</button>
+
+<!-- Side Navigation Menu -->
+<div id="side-nav" class="fixed top-0 left-0 w-64 h-full bg-white transform -translate-x-full transition-transform duration-300 ease-in-out z-50 shadow-2xl">
+<div class="p-6">
+<div class="flex justify-end mb-8">
+<button id="close-menu" class="w-8 h-8 flex items-center justify-center">
+<i class="ri-close-line text-2xl text-gray-700"></i>
+</button>
+</div>
+<nav class="space-y-6">
+<a href="#home" class="block text-xl font-semibold text-gray-800 hover:text-primary">
+<i class="ri-home-line mr-3"></i>Home
+</a>
+<a href="#about" class="block text-xl font-semibold text-gray-800 hover:text-primary">
+<i class="ri-information-line mr-3"></i>About Us
+</a>
+<a href="#products" class="block text-xl font-semibold text-gray-800 hover:text-primary">
+<i class="ri-store-2-line mr-3"></i>Products
+</a>
+<a href="#orders" class="block text-xl font-semibold text-gray-800 hover:text-primary">
+<i class="ri-shopping-bag-line mr-3"></i>My Orders
+</a>
+<a href="#contact" class="block text-xl font-semibold text-gray-800 hover:text-primary">
+<i class="ri-customer-service-line mr-3"></i>Contact
+</a>
+</nav>
+<div class="absolute bottom-8 left-0 w-full px-6">
+<div class="flex justify-center space-x-4">
+<a href="#" class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200">
+<i class="ri-instagram-line text-xl text-gray-700"></i>
+</a>
+<a href="#" class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200">
+<i class="ri-whatsapp-line text-xl text-gray-700"></i>
+</a>
+</div>
+</div>
+</div>
+</div>
+
+<div class="font-['Pacifico'] text-xl text-primary">logo</div>
+
+<!-- Updated Icons Section -->
+<div class="flex items-center space-x-3">
+  <!-- Favorite Button with Dropdown -->
+  <div class="relative">
+    <button id="favorite-button" class="w-8 h-8 flex items-center justify-center cursor-pointer">
+      <i class="ri-heart-line text-xl text-gray-700"></i>
+      <span id="favorite-count" class="hidden absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+    </button>
+    <div id="favorite-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-50 p-4 max-h-80 overflow-y-auto">
+      <h4 class="font-bold text-gray-800 mb-2">Your Favorites</h4>
+      <div id="favorite-items" class="space-y-2">
+        <!-- Favorite items will appear here -->
+      </div>
+    </div>
+  </div>
+<!-- In the navigation bar section -->
+<div class="relative">
+  <button id="profile-button" class="w-8 h-8 flex items-center justify-center cursor-pointer">
+    <i class="ri-user-line text-xl text-gray-700"></i>
+  </button>
+</div>
+
+<!-- Login Modal (shown when user is not logged in) -->
+<div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+  <div class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl transform transition-transform duration-300 ease-in-out max-h-[80vh] overflow-y-auto">
+    <div class="p-6">
+      <div class="flex justify-end mb-4">
+        <button id="close-login-modal" class="w-8 h-8 flex items-center justify-center">
+          <i class="ri-close-line text-2xl text-gray-700"></i>
+        </button>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">Welcome Back!</h2>
+      <form class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+          <input type="tel" class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Enter your phone number">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input type="password" class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Enter your password">
+        </div>
+        <div class="flex justify-end">
+          <button type="button" class="text-sm text-primary">Forgot Password?</button>
+        </div>
+        <button type="button" id="login-btn" class="w-full bg-primary text-white py-3 rounded-button font-medium">Login</button>
+      </form>
+      <div class="mt-6 text-center">
+        <p class="text-gray-600">Don't have an account?</p>
+        <button id="show-signup" class="mt-2 text-primary font-medium">Sign Up</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Signup Modal -->
+<div id="signup-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+  <div class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl transform transition-transform duration-300 ease-in-out max-h-[80vh] overflow-y-auto">
+    <div class="p-6">
+      <div class="flex justify-end mb-4">
+        <button id="close-signup-modal" class="w-8 h-8 flex items-center justify-center">
+          <i class="ri-close-line text-2xl text-gray-700"></i>
+        </button>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">Create Your Account</h2>
+      <form class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <input type="text" class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Enter your full name">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+          <input type="tel" class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Enter your phone number">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email (Optional)</label>
+          <input type="email" class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Enter your email">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input type="password" class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Create a password">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+          <input type="password" class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Confirm your password">
+        </div>
+        <button type="button" id="signup-btn" class="w-full bg-primary text-white py-3 rounded-button font-medium">Create Account</button>
+      </form>
+      <div class="mt-6 text-center">
+        <p class="text-gray-600">Already have an account?</p>
+        <button id="show-login-from-signup" class="mt-2 text-primary font-medium">Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Modal (for authenticated users) -->
+<div id="profile-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+  <div class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl transform transition-transform duration-300 ease-in-out max-h-[80vh] overflow-y-auto">
+    <div class="p-6">
+      <div class="flex justify-end mb-4">
+        <button id="close-profile-modal" class="w-8 h-8 flex items-center justify-center">
+          <i class="ri-close-line text-2xl text-gray-700"></i>
+        </button>
+      </div>
+      <div class="flex items-center space-x-4 mb-6">
+        <div class="w-16 h-16 bg-primary bg-opacity-10 rounded-full flex items-center justify-center">
+          <i class="ri-user-3-line text-2xl text-primary"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800" id="profile-name">John Doe</h2>
+          <p class="text-sm text-gray-600" id="profile-phone">+91 98765 43210</p>
+        </div>
+      </div>
+      <div class="space-y-3">
+        <a href="#" class="flex items-center p-3 rounded-lg hover:bg-gray-100">
+          <i class="ri-user-line text-xl text-gray-700 mr-3"></i>
+          <span class="font-medium">My Profile</span>
+        </a>
+        <a href="#" class="flex items-center p-3 rounded-lg hover:bg-gray-100">
+          <i class="ri-map-pin-line text-xl text-gray-700 mr-3"></i>
+          <span class="font-medium">Saved Addresses</span>
+        </a>
+        <a href="#" class="flex items-center p-3 rounded-lg hover:bg-gray-100">
+          <i class="ri-heart-line text-xl text-gray-700 mr-3"></i>
+          <span class="font-medium">My Favorites</span>
+        </a>
+        <a href="#" class="flex items-center p-3 rounded-lg hover:bg-gray-100">
+          <i class="ri-shopping-bag-line text-xl text-gray-700 mr-3"></i>
+          <span class="font-medium">Order History</span>
+        </a>
+        <div class="border-t border-gray-200 my-2"></div>
+        <button id="logout-btn" class="w-full flex items-center p-3 rounded-lg hover:bg-gray-100 text-red-500">
+          <i class="ri-logout-box-line text-xl mr-3"></i>
+          <span class="font-medium">Logout</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Cart Button with Dropdown -->
+  <div class="relative">
+    <button id="cart-button" class="w-8 h-8 flex items-center justify-center relative cursor-pointer">
+      <i class="ri-shopping-cart-line text-xl text-gray-700"></i>
+      <span id="cart-count" class="absolute -top-1 -right-1 bg-secondary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+    </button>
+    <div id="cart-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-50 p-4 max-h-80 overflow-y-auto">
+      <h4 class="font-bold text-gray-800 mb-2">Your Cart</h4>
+      <div id="cart-items" class="space-y-2">
+        <!-- Cart items will appear here -->
+      </div>
+      <button id="view-cart-btn" class="w-full mt-4 bg-primary text-white py-2 rounded-button font-medium">View Cart</button>
+    </div>
+  </div>
+</div>
+</div>
+</nav>
+
+<!-- Main Content -->
+<main class="pt-24 pb-4" id="home">
+<!-- Hero Slider -->
+<section class="relative h-48 overflow-hidden">
+<div id="slider" class="slider-container flex transition-transform duration-500 ease-in-out">
+<div class="min-w-full h-48 relative">
+<img src="https://readdy.ai/api/search-image?query=Premium%20basmati%20rice%20bags%20stacked%20beautifully%20in%20modern%20warehouse%20setting%2C%20professional%20product%20photography%2C%20warm%20lighting%2C%20high%20quality%20rice%20packaging%20with%20elegant%20branding%2C%20clean%20white%20background%2C%20commercial%20food%20photography%20style&width=375&height=192&seq=hero1&orientation=landscape"
+alt="Premium Rice Bags" class="w-full h-full object-cover object-top">
+<div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+<div class="text-center text-white">
+<h2 class="text-xl font-bold mb-1">Premium Basmati Rice</h2>
+<p class="text-sm">Fresh from farms to your table</p>
+</div>
+</div>
+</div>
+<div class="min-w-full h-48 relative">
+<img src="https://readdy.ai/api/search-image?query=Traditional%20Indian%20rice%20varieties%20displayed%20in%20beautiful%20jute%20bags%2C%20rustic%20wooden%20background%2C%20natural%20lighting%2C%20authentic%20rice%20grains%20visible%2C%20traditional%20packaging%2C%20warm%20earthy%20tones%2C%20food%20photography&width=375&height=192&seq=hero2&orientation=landscape"
+alt="Traditional Rice" class="w-full h-full object-cover object-top">
+<div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+<div class="text-center text-white">
+<h2 class="text-xl font-bold mb-1">Traditional Varieties</h2>
+<p class="text-sm">Authentic taste, premium quality</p>
+</div>
+</div>
+</div>
+<div class="min-w-full h-48 relative">
+<img src="https://readdy.ai/api/search-image?query=Organic%20rice%20bags%20with%20eco-friendly%20packaging%2C%20green%20natural%20background%2C%20sustainable%20farming%20concept%2C%20healthy%20food%20photography%2C%20modern%20organic%20branding%2C%20fresh%20and%20clean%20aesthetic&width=375&height=192&seq=hero3&orientation=landscape"
+alt="Organic Rice" class="w-full h-full object-cover object-top">
+<div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+<div class="text-center text-white">
+<h2 class="text-xl font-bold mb-1">Organic Collection</h2>
+<p class="text-sm">100% natural and healthy</p>
+</div>
+</div>
+</div>
+<div class="min-w-full h-48 relative">
+<img src="https://readdy.ai/api/search-image?query=Special%20offer%20rice%20bags%20with%20discount%20tags%2C%20promotional%20display%2C%20attractive%20pricing%20labels%2C%20commercial%20product%20photography%2C%20bright%20and%20appealing%20presentation%2C%20marketing%20focused%20imagery&width=375&height=192&seq=hero4&orientation=landscape"
+alt="Special Offers" class="w-full h-full object-cover object-top">
+<div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+<div class="text-center text-white">
+<h2 class="text-xl font-bold mb-1">Special Offers</h2>
+<p class="text-sm">Up to 30% off on bulk orders</p>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+<button class="slider-dot w-2 h-2 rounded-full bg-white opacity-50" data-slide="0"></button>
+<button class="slider-dot w-2 h-2 rounded-full bg-white opacity-50" data-slide="1"></button>
+<button class="slider-dot w-2 h-2 rounded-full bg-white opacity-50" data-slide="2"></button>
+<button class="slider-dot w-2 h-2 rounded-full bg-white opacity-50" data-slide="3"></button>
+</div>
+</section>
+
+<!-- Marquee Section -->
+<section class="bg-secondary py-2 overflow-hidden">
+<div class="marquee whitespace-nowrap text-white font-medium">
+🎉 Special Offer: Free delivery on orders above ₹500 | Use code RICE20 for 20% off | Fresh stock arrived today! 🎉
+</div>
+</section>
+
+<!-- Products Section -->
+<section class="px-4 py-6" id="products">
+<h3 class="text-lg font-bold text-gray-800 mb-4">Featured Products</h3>
+<div class="relative">
+<button id="scroll-left" class="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center z-10 -ml-4">
+<i class="ri-arrow-left-s-line text-gray-600"></i>
+</button>
+<div class="flex space-x-4 overflow-x-auto pb-4 scroll-smooth" id="product-container">
+<!-- Product Card 1 -->
+<div class="min-w-48 bg-white rounded-lg shadow-md overflow-hidden" data-product-id="1">
+<div class="relative">
+<img src="https://readdy.ai/api/search-image?query=Premium%20basmati%20rice%20bag%2C%20high%20quality%20product%20photography%2C%20white%20background%2C%20professional%20lighting%2C%20detailed%20rice%20packaging%2C%20commercial%20food%20photography%2C%20elegant%20branding%20design&width=192&height=144&seq=product1&orientation=landscape"
+alt="Premium Basmati" class="w-full h-36 object-cover object-top">
+<span class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">Top Selling</span>
+<button class="product-favorite-btn absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm cursor-pointer">
+<i class="ri-heart-line text-gray-600"></i>
+</button>
+</div>
+<div class="p-3">
+<h4 class="font-semibold text-gray-800 mb-1">Premium Basmati Rice</h4>
+<p class="text-xs text-gray-600 mb-2">Long grain, aromatic, perfect for biryani and pulao dishes</p>
+<div class="flex items-center mb-2">
+<div class="flex text-yellow-400 text-sm">
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-half-fill"></i>
+</div>
+<span class="text-xs text-gray-500 ml-1">(1,247 orders)</span>
+</div>
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center space-x-1">
+<span class="text-sm text-gray-400 line-through">₹450</span>
+<span class="text-lg font-bold text-primary">₹320</span>
+</div>
+</div>
+<button class="w-full bg-primary text-white py-2 rounded-button font-medium cursor-pointer add-to-cart-btn">Add to Cart</button>
+</div>
+</div>
+
+<!-- Product Card 2 -->
+<div class="min-w-48 bg-white rounded-lg shadow-md overflow-hidden" data-product-id="2">
+<div class="relative">
+<img src="https://readdy.ai/api/search-image?query=Organic%20brown%20rice%20bag%2C%20healthy%20food%20photography%2C%20natural%20packaging%2C%20eco-friendly%20design%2C%20premium%20organic%20product%2C%20white%20background%2C%20professional%20commercial%20photography&width=192&height=144&seq=product2&orientation=landscape"
+alt="Organic Brown Rice" class="w-full h-36 object-cover object-top">
+<span class="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">Organic</span>
+<button class="product-favorite-btn absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm cursor-pointer">
+<i class="ri-heart-line text-gray-600"></i>
+</button>
+</div>
+<div class="p-3">
+<h4 class="font-semibold text-gray-800 mb-1">Organic Brown Rice</h4>
+<p class="text-xs text-gray-600 mb-2">Nutritious whole grain, rich in fiber and minerals</p>
+<div class="flex items-center mb-2">
+<div class="flex text-yellow-400 text-sm">
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-line"></i>
+</div>
+<span class="text-xs text-gray-500 ml-1">(892 orders)</span>
+</div>
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center space-x-1">
+<span class="text-sm text-gray-400 line-through">₹380</span>
+<span class="text-lg font-bold text-primary">₹290</span>
+</div>
+</div>
+<button class="w-full bg-primary text-white py-2 rounded-button font-medium cursor-pointer add-to-cart-btn">Add to Cart</button>
+</div>
+</div>
+
+<!-- Product Card 3 -->
+<div class="min-w-48 bg-white rounded-lg shadow-md overflow-hidden" data-product-id="3">
+<div class="relative">
+<img src="https://readdy.ai/api/search-image?query=Traditional%20jasmine%20rice%20bag%2C%20fragrant%20rice%20variety%2C%20premium%20packaging%20design%2C%20white%20background%2C%20professional%20product%20photography%2C%20authentic%20Asian%20rice%20branding&width=192&height=144&seq=product3&orientation=landscape"
+alt="Jasmine Rice" class="w-full h-36 object-cover object-top">
+<span class="absolute top-2 left-2 bg-purple-500 text-white text-xs px-2 py-1 rounded">Premium</span>
+<button class="product-favorite-btn absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm cursor-pointer">
+<i class="ri-heart-line text-gray-600"></i>
+</button>
+</div>
+<div class="p-3">
+<h4 class="font-semibold text-gray-800 mb-1">Jasmine Rice</h4>
+<p class="text-xs text-gray-600 mb-2">Fragrant Thai variety, perfect for Asian cuisine</p>
+<div class="flex items-center mb-2">
+<div class="flex text-yellow-400 text-sm">
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+</div>
+<span class="text-xs text-gray-500 ml-1">(2,156 orders)</span>
+</div>
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center space-x-1">
+<span class="text-sm text-gray-400 line-through">₹520</span>
+<span class="text-lg font-bold text-primary">₹410</span>
+</div>
+</div>
+<button class="w-full bg-primary text-white py-2 rounded-button font-medium cursor-pointer add-to-cart-btn">Add to Cart</button>
+</div>
+</div>
+
+<!-- Product Card 4 -->
+<div class="min-w-48 bg-white rounded-lg shadow-md overflow-hidden" data-product-id="4">
+<div class="relative">
+<img src="https://readdy.ai/api/search-image?query=Sona%20masoori%20rice%20bag%2C%20South%20Indian%20rice%20variety%2C%20traditional%20packaging%2C%20premium%20quality%20product%20photography%2C%20white%20background%2C%20commercial%20food%20photography&width=192&height=144&seq=product4&orientation=landscape"
+alt="Sona Masoori" class="w-full h-36 object-cover object-top">
+<span class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">Regional</span>
+<button class="product-favorite-btn absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm cursor-pointer">
+<i class="ri-heart-line text-gray-600"></i>
+</button>
+</div>
+<div class="p-3">
+<h4 class="font-semibold text-gray-800 mb-1">Sona Masoori Rice</h4>
+<p class="text-xs text-gray-600 mb-2">Medium grain, lightweight, ideal for daily meals</p>
+<div class="flex items-center mb-2">
+<div class="flex text-yellow-400 text-sm">
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-line"></i>
+</div>
+<span class="text-xs text-gray-500 ml-1">(1,834 orders)</span>
+</div>
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center space-x-1">
+<span class="text-sm text-gray-400 line-through">₹340</span>
+<span class="text-lg font-bold text-primary">₹260</span>
+</div>
+</div>
+<button class="w-full bg-primary text-white py-2 rounded-button font-medium cursor-pointer add-to-cart-btn">Add to Cart</button>
+</div>
+</div>
+
+<!-- Product Card 5 -->
+<div class="min-w-48 bg-white rounded-lg shadow-md overflow-hidden" data-product-id="5">
+<div class="relative">
+<img src="https://readdy.ai/api/search-image?query=Red%20rice%20bag%2C%20healthy%20alternative%20rice%20variety%2C%20nutritious%20whole%20grain%2C%20premium%20organic%20packaging%2C%20white%20background%2C%20professional%20product%20photography%2C%20health%20food%20branding&width=192&height=144&seq=product5&orientation=landscape"
+alt="Red Rice" class="w-full h-36 object-cover object-top">
+<span class="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded">Healthy</span>
+<button class="product-favorite-btn absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm cursor-pointer">
+<i class="ri-heart-line text-gray-600"></i>
+</button>
+</div>
+<div class="p-3">
+<h4 class="font-semibold text-gray-800 mb-1">Red Rice</h4>
+<p class="text-xs text-gray-600 mb-2">Antioxidant rich, unpolished, traditional variety</p>
+<div class="flex items-center mb-2">
+<div class="flex text-yellow-400 text-sm">
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-half-fill"></i>
+<i class="ri-star-line"></i>
+</div>
+<span class="text-xs text-gray-500 ml-1">(567 orders)</span>
+</div>
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center space-x-1">
+<span class="text-sm text-gray-400 line-through">₹420</span>
+<span class="text-lg font-bold text-primary">₹350</span>
+</div>
+</div>
+<button class="w-full bg-primary text-white py-2 rounded-button font-medium cursor-pointer add-to-cart-btn">Add to Cart</button>
+</div>
+</div>
+</div>
+<button id="scroll-right" class="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center z-10 -mr-4">
+<i class="ri-arrow-right-s-line text-gray-600"></i>
+</button>
+</div>
+<div class="text-center mt-4">
+<button class="bg-gray-100 text-gray-700 px-6 py-2 rounded-button font-medium cursor-pointer">View All Products</button>
+</div>
+</section>
+
+<!-- About Us Section -->
+<section id="about" class="px-4 py-6 bg-white hidden">
+<h3 class="text-lg font-bold text-gray-800 mb-4">About RICEMAKERS</h3>
+<div class="space-y-4">
+<p class="text-gray-600">RICEMAKERS is a premium rice delivery service that brings the finest quality rice directly from farms to your doorstep. We specialize in authentic, aromatic rice varieties that are carefully selected and packaged to preserve their natural goodness.</p>
+<p class="text-gray-600">Founded in 2020, our mission is to provide customers with the healthiest and most flavorful rice varieties while supporting local farmers and sustainable agriculture practices.</p>
+</div>
+</section>
+
+<!-- Order Process Timeline - Clean Timeline Version -->
+<section class="px-4 py-8 bg-white">
+  <h3 class="text-2xl font-bold text-gray-800 mb-8 text-center">How It Works</h3>
+  
+  <div class="relative max-w-md mx-auto">
+    <!-- Timeline line -->
+    <div class="absolute left-6 top-0 bottom-6 w-0.5 bg-gradient-to-b from-primary to-secondary transform translate-x-1/2"></div>
+    
+    <!-- Step 1 -->
+    <div class="relative flex items-start mb-8">
+      <div class="flex-shrink-0 z-10">
+        <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white shadow-lg border-4 border-white">
+          <i class="ri-search-eye-line text-xl"></i>
+        </div>
+      </div>
+      <div class="ml-6 pt-1">
+        <h4 class="font-semibold text-lg text-gray-800">Browse Our Collection</h4>
+        <p class="text-gray-600 mt-1">Explore our premium rice varieties with detailed descriptions</p>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="relative flex items-start mb-8">
+      <div class="flex-shrink-0 z-10">
+        <div class="w-12 h-12 bg-secondary rounded-full flex items-center justify-center text-white shadow-lg border-4 border-white">
+          <i class="ri-shopping-cart-2-line text-xl"></i>
+        </div>
+      </div>
+      <div class="ml-6 pt-1">
+        <h4 class="font-semibold text-lg text-gray-800">Add to Cart</h4>
+        <p class="text-gray-600 mt-1">Select your preferred quantity and add items</p>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="relative flex items-start mb-8">
+      <div class="flex-shrink-0 z-10">
+        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-lg border-4 border-white">
+          <i class="ri-checkbox-circle-line text-xl"></i>
+        </div>
+      </div>
+      <div class="ml-6 pt-1">
+        <h4 class="font-semibold text-lg text-gray-800">Confirm Order</h4>
+        <p class="text-gray-600 mt-1">Review your selections and proceed to checkout</p>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="relative flex items-start mb-8">
+      <div class="flex-shrink-0 z-10">
+        <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white shadow-lg border-4 border-white">
+          <i class="ri-wallet-3-line text-xl"></i>
+        </div>
+      </div>
+      <div class="ml-6 pt-1">
+        <h4 class="font-semibold text-lg text-gray-800">Secure Payment</h4>
+        <p class="text-gray-600 mt-1">Pay online or choose cash on delivery</p>
+      </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="relative flex items-start mb-8">
+      <div class="flex-shrink-0 z-10">
+        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white shadow-lg border-4 border-white">
+          <i class="ri-truck-line text-xl"></i>
+        </div>
+      </div>
+      <div class="ml-6 pt-1">
+        <h4 class="font-semibold text-lg text-gray-800">Fast Delivery</h4>
+        <p class="text-gray-600 mt-1">Get real-time updates on your order status</p>
+      </div>
+    </div>
+
+    <!-- Step 6 -->
+    <div class="relative flex items-start">
+      <div class="flex-shrink-0 z-10">
+        <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white shadow-lg border-4 border-white">
+          <i class="ri-restaurant-line text-xl"></i>
+        </div>
+      </div>
+      <div class="ml-6 pt-1">
+        <h4 class="font-semibold text-lg text-gray-800">Enjoy Quality Rice</h4>
+        <p class="text-gray-600 mt-1">Cook delicious meals with our premium rice</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="px-4 py-6 bg-white">
+<h3 class="text-lg font-bold text-gray-800 mb-6 text-center">How It Works</h3>
+<div class="space-y-4">
+<div class="flex items-center space-x-4">
+<div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+<i class="ri-search-line text-white text-lg"></i>
+</div>
+<div class="flex-1">
+<h4 class="font-semibold text-gray-800">Find your best rice bag</h4>
+<p class="text-sm text-gray-600">Browse our premium collection</p>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<div class="w-12 h-12 bg-secondary rounded-full flex items-center justify-center flex-shrink-0">
+<i class="ri-shopping-cart-line text-white text-lg"></i>
+</div>
+<div class="flex-1">
+<h4 class="font-semibold text-gray-800">Add to cart</h4>
+<p class="text-sm text-gray-600">Select quantity and add to cart</p>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+<i class="ri-check-line text-white text-lg"></i>
+</div>
+<div class="flex-1">
+<h4 class="font-semibold text-gray-800">Confirm order</h4>
+<p class="text-sm text-gray-600">Review and place your order</p>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+<i class="ri-money-rupee-circle-line text-white text-lg"></i>
+</div>
+<div class="flex-1">
+<h4 class="font-semibold text-gray-800">Pay while you receive bag</h4>
+<p class="text-sm text-gray-600">Cash on delivery available</p>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+<i class="ri-phone-line text-white text-lg"></i>
+</div>
+<div class="flex-1">
+<h4 class="font-semibold text-gray-800">Delivery agents will contact you</h4>
+<p class="text-sm text-gray-600">Track your order in real-time</p>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
+<i class="ri-restaurant-line text-white text-lg"></i>
+</div>
+<div class="flex-1">
+<h4 class="font-semibold text-gray-800">Enjoy cooking</h4>
+<p class="text-sm text-gray-600">Fresh rice delivered to your door</p>
+</div>
+</div>
+</div>
+</section>
+<!-- My Orders Section -->
+<section id="orders" class="px-4 py-6 bg-white hidden">
+<h3 class="text-lg font-bold text-gray-800 mb-4">My Orders</h3>
+<div class="space-y-4">
+<div class="p-4 border border-gray-200 rounded-lg">
+<div class="flex justify-between items-center mb-2">
+<h4 class="font-semibold">Order #12345</h4>
+<span class="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">Delivered</span>
+</div>
+<p class="text-sm text-gray-600">Premium Basmati Rice (2kg), Jasmine Rice (1kg)</p>
+<p class="text-sm text-gray-600">Total: ₹1,040</p>
+</div>
+<div class="p-4 border border-gray-200 rounded-lg">
+<div class="flex justify-between items-center mb-2">
+<h4 class="font-semibold">Order #12344</h4>
+<span class="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">In Transit</span>
+</div>
+<p class="text-sm text-gray-600">Organic Brown Rice (5kg), Sona Masoori Rice (5kg)</p>
+<p class="text-sm text-gray-600">Total: ₹2,750</p>
+</div>
+</div>
+</section>
+
+<!-- Contact Us Section -->
+<section id="contact" class="px-4 py-6 bg-white hidden">
+<h3 class="text-lg font-bold text-gray-800 mb-4">Contact Us</h3>
+<div class="space-y-4">
+<div class="flex items-start space-x-4">
+<div class="w-10 h-10 bg-primary bg-opacity-10 rounded-full flex items-center justify-center flex-shrink-0">
+<i class="ri-phone-line text-primary"></i>
+</div>
+<div>
+<h4 class="font-semibold text-gray-800">Phone</h4>
+<p class="text-sm text-gray-600">+91 98765 43210</p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="w-10 h-10 bg-primary bg-opacity-10 rounded-full flex items-center justify-center flex-shrink-0">
+<i class="ri-mail-line text-primary"></i>
+</div>
+<div>
+<h4 class="font-semibold text-gray-800">Email</h4>
+<p class="text-sm text-gray-600">info@ricemakers.com</p>
+</div>
+</div>
+<div class="flex items-start space-x-4">
+<div class="w-10 h-10 bg-primary bg-opacity-10 rounded-full flex items-center justify-center flex-shrink-0">
+<i class="ri-map-pin-line text-primary"></i>
+</div>
+<div>
+<h4 class="font-semibold text-gray-800">Address</h4>
+<p class="text-sm text-gray-600">123 Rice Street, Singanallur, Coimbatore, Tamil Nadu 641005</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Customer Reviews -->
+<section class="px-4 py-6">
+<h3 class="text-lg font-bold text-gray-800 mb-4">Customer Reviews</h3>
+<div class="flex space-x-4 overflow-x-auto pb-4">
+<!-- Review Card 1 -->
+<div class="min-w-72 bg-white rounded-lg shadow-md p-4">
+<div class="flex items-center mb-3">
+<img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20smiling%20Indian%20woman%2C%20customer%20profile%20photo%2C%20friendly%20expression%2C%20clean%20background%2C%20portrait%20photography%20style&width=40&height=40&seq=customer1&orientation=squarish"
+alt="Customer" class="w-10 h-10 rounded-full object-cover">
+<div class="ml-3">
+<h5 class="font-semibold text-gray-800">Priya Sharma</h5>
+<p class="text-xs text-gray-500">Verified Purchase • 2 days ago</p>
+</div>
+</div>
+<div class="flex text-yellow-400 text-sm mb-2">
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+</div>
+<p class="text-sm text-gray-600">"Excellent quality basmati rice! The grains are long and aromatic. Fast delivery and great packaging. Will definitely order again."</p>
+</div>
+<!-- Review Card 2 -->
+<div class="min-w-72 bg-white rounded-lg shadow-md p-4">
+<div class="flex items-center mb-3">
+<img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20middle-aged%20Indian%20man%2C%20customer%20profile%20photo%2C%20satisfied%20expression%2C%20clean%20background%2C%20portrait%20photography%20style&width=40&height=40&seq=customer2&orientation=squarish"
+alt="Customer" class="w-10 h-10 rounded-full object-cover">
+<div class="ml-3">
+<h5 class="font-semibold text-gray-800">Rajesh Kumar</h5>
+<p class="text-xs text-gray-500">Verified Purchase • 1 week ago</p>
+</div>
+</div>
+<div class="flex text-yellow-400 text-sm mb-2">
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-line"></i>
+</div>
+<p class="text-sm text-gray-600">"Good service and quality rice. The organic brown rice is fresh and nutritious. Delivery was on time as promised."</p>
+</div>
+<!-- Review Card 3 -->
+<div class="min-w-72 bg-white rounded-lg shadow-md p-4">
+<div class="flex items-center mb-3">
+<img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20young%20Indian%20woman%2C%20customer%20profile%20photo%2C%20happy%20expression%2C%20clean%20background%2C%20portrait%20photography%20style&width=40&height=40&seq=customer3&orientation=squarish"
+alt="Customer" class="w-10 h-10 rounded-full object-cover">
+<div class="ml-3">
+<h5 class="font-semibold text-gray-800">Anitha Reddy</h5>
+<p class="text-xs text-gray-500">Verified Purchase • 3 days ago</p>
+</div>
+</div>
+<div class="flex text-yellow-400 text-sm mb-2">
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+<i class="ri-star-fill"></i>
+</div>
+<p class="text-sm text-gray-600">"Amazing jasmine rice! Perfect for my family's daily meals. The aroma and taste are exceptional. Highly recommended!"</p>
+</div>
+</div>
+</section>
+</main>
+
+<!-- Footer -->
+<footer class="bg-gray-800 text-white px-4 py-8">
+<div class="max-w-sm mx-auto">
+<div class="text-center mb-6">
+<div class="font-['Pacifico'] text-2xl text-primary mb-2">logo</div>
+<p class="text-sm text-gray-300">Premium rice delivered fresh to your doorstep</p>
+</div>
+<div class="grid grid-cols-2 gap-6 mb-6">
+<div>
+<h4 class="font-semibold mb-3">Quick Links</h4>
+<ul class="space-y-2 text-sm text-gray-300">
+<li><a href="#home" class="cursor-pointer">Home</a></li>
+<li><a href="#about" class="cursor-pointer">About Us</a></li>
+<li><a href="#products" class="cursor-pointer">Products</a></li>
+<li><a href="#contact" class="cursor-pointer">Contact</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-semibold mb-3">Contact Info</h4>
+<ul class="space-y-2 text-sm text-gray-300">
+<li>📞 +91 98765 43210</li>
+<li>📧 info@ricemakers.com</li>
+<li>📍 Singanallur, Coimbatore</li>
+</ul>
+</div>
+</div>
+<div class="flex justify-center space-x-4 mb-6">
+<button class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center cursor-pointer">
+<i class="ri-facebook-fill text-lg"></i>
+</button>
+<button class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center cursor-pointer">
+<i class="ri-instagram-line text-lg"></i>
+</button>
+<button class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center cursor-pointer">
+<i class="ri-whatsapp-line text-lg"></i>
+</button>
+</div>
+<div class="text-center text-xs text-gray-400 border-t border-gray-700 pt-4">
+<p>© 2024 RICEMAKERS. All rights reserved.</p>
+<p class="mt-1">We accept: Cash on Delivery | UPI | Cards</p>
+</div>
+</div>
+</footer>
+
+// ======= Java Script ======= //
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // ========== Notification Handler ==========
+  const closeBtn = document.getElementById('close-notification');
+  const notificationBar = document.getElementById('notification-bar');
+  const navbar = document.getElementById('navbar');
+  
+  if (closeBtn && notificationBar && navbar) {
+    closeBtn.addEventListener('click', function() {
+      notificationBar.style.display = 'none';
+      navbar.style.top = '0';
+      document.querySelector('main').style.paddingTop = '4rem';
+    });
+  }
+
+  // ========== Side Navigation Handler ==========
+  const menuButton = document.getElementById('menu-button');
+  const closeMenu = document.getElementById('close-menu');
+  const sideNav = document.getElementById('side-nav');
+  
+  if (menuButton && closeMenu && sideNav) {
+    menuButton.addEventListener('click', function() {
+      sideNav.classList.remove('-translate-x-full');
+    });
+    
+    closeMenu.addEventListener('click', function() {
+      sideNav.classList.add('-translate-x-full');
+    });
+  }
+
+  // ========== Auth Modals ==========
+  const profileButton = document.getElementById('profile-button');
+  const loginModal = document.getElementById('login-modal');
+  const closeLoginModal = document.getElementById('close-login-modal');
+  const profileModal = document.getElementById('profile-modal');
+  const closeProfileModal = document.getElementById('close-profile-modal');
+  const loginBtn = document.getElementById('login-btn');
+  const logoutBtn = document.getElementById('logout-btn');
+  
+  // Signup modal elements
+  const signupModal = document.getElementById('signup-modal');
+  const closeSignupModal = document.getElementById('close-signup-modal');
+  const showSignup = document.getElementById('show-signup');
+  const showLoginFromSignup = document.getElementById('show-login-from-signup');
+  const signupBtn = document.getElementById('signup-btn');
+
+  // Check authentication status
+  function isAuthenticated() {
+    return localStorage.getItem('authToken') !== null;
+  }
+
+  // Profile button click handler
+  if (profileButton) {
+    profileButton.addEventListener('click', function() {
+      if (isAuthenticated()) {
+        showProfileModal();
+      } else {
+        showLoginModal();
+      }
+    });
+  }
+
+  // Show login modal
+  function showLoginModal() {
+    if (loginModal) {
+      loginModal.classList.remove('hidden');
+    }
+  }
+
+  // Close login modal
+  if (closeLoginModal) {
+    closeLoginModal.addEventListener('click', function() {
+      loginModal.classList.add('hidden');
+    });
+  }
+
+  // Show profile modal
+  function showProfileModal() {
+    if (profileModal) {
+      // Update profile info from localStorage
+      const profileName = document.getElementById('profile-name');
+      const profilePhone = document.getElementById('profile-phone');
+      if (profileName) profileName.textContent = localStorage.getItem('userName') || 'User';
+      if (profilePhone) profilePhone.textContent = localStorage.getItem('userPhone') || '';
+      
+      profileModal.classList.remove('hidden');
+    }
+  }
+
+  // Close profile modal
+  if (closeProfileModal) {
+    closeProfileModal.addEventListener('click', function() {
+      profileModal.classList.add('hidden');
+    });
+  }
+
+  // Login button handler
+  if (loginBtn) {
+    loginBtn.addEventListener('click', function() {
+      // Simple login simulation
+      localStorage.setItem('authToken', 'sample-token');
+      localStorage.setItem('userName', 'John Doe');
+      localStorage.setItem('userPhone', '+91 98765 43210');
+      
+      loginModal.classList.add('hidden');
+      showProfileModal();
+    });
+  }
+
+  // Show signup modal when "Sign Up" is clicked in login modal
+  if (showSignup) {
+    showSignup.addEventListener('click', function() {
+      loginModal.classList.add('hidden');
+      signupModal.classList.remove('hidden');
+    });
+  }
+
+  // Show login modal when "Login" is clicked in signup modal
+  if (showLoginFromSignup) {
+    showLoginFromSignup.addEventListener('click', function() {
+      signupModal.classList.add('hidden');
+      loginModal.classList.remove('hidden');
+    });
+  }
+
+  // Close signup modal
+  if (closeSignupModal) {
+    closeSignupModal.addEventListener('click', function() {
+      signupModal.classList.add('hidden');
+    });
+  }
+
+  // Handle signup button click
+  if (signupBtn) {
+    signupBtn.addEventListener('click', function() {
+      // Here you would normally validate the form and send to server
+      // For demo purposes, we'll just simulate a successful signup
+      const nameInput = signupModal.querySelector('input[type="text"]');
+      const phoneInput = signupModal.querySelector('input[type="tel"]');
+      
+      localStorage.setItem('authToken', 'sample-token');
+      localStorage.setItem('userName', nameInput?.value || 'New User');
+      localStorage.setItem('userPhone', phoneInput?.value || '+91 98765 43210');
+      
+      signupModal.classList.add('hidden');
+      showProfileModal();
+    });
+  }
+
+  // Logout button handler
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', function() {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userPhone');
+      profileModal.classList.add('hidden');
+    });
+  }
+
+  // ========== Cart and Favorites Dropdowns ==========
+  const cartButton = document.getElementById('cart-button');
+  const cartDropdown = document.getElementById('cart-dropdown');
+  const favoriteButton = document.getElementById('favorite-button');
+  const favoriteDropdown = document.getElementById('favorite-dropdown');
+
+  // Toggle cart dropdown
+  if (cartButton && cartDropdown) {
+    cartButton.addEventListener('click', function(e) {
+      e.stopPropagation();
+      cartDropdown.classList.toggle('hidden');
+      favoriteDropdown.classList.add('hidden');
+    });
+  }
+
+  // Toggle favorite dropdown
+  if (favoriteButton && favoriteDropdown) {
+    favoriteButton.addEventListener('click', function(e) {
+      e.stopPropagation();
+      favoriteDropdown.classList.toggle('hidden');
+      cartDropdown.classList.add('hidden');
+    });
+  }
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', function() {
+    if (cartDropdown) cartDropdown.classList.add('hidden');
+    if (favoriteDropdown) favoriteDropdown.classList.add('hidden');
+  });
+
+  // ========== Product Slider ==========
+  const scrollLeftBtn = document.getElementById('scroll-left');
+  const scrollRightBtn = document.getElementById('scroll-right');
+  const productContainer = document.getElementById('product-container');
+  
+  if (scrollLeftBtn && scrollRightBtn && productContainer) {
+    scrollLeftBtn.addEventListener('click', () => {
+      productContainer.scrollBy({ left: -200, behavior: 'smooth' });
+    });
+    
+    scrollRightBtn.addEventListener('click', () => {
+      productContainer.scrollBy({ left: 200, behavior: 'smooth' });
+    });
+  }
+
+  // ========== Image Slider ==========
+  const slider = document.getElementById('slider');
+  const dots = document.querySelectorAll('.slider-dot');
+  
+  if (slider && dots.length > 0) {
+    let currentSlide = 0;
+    const totalSlides = 4;
+    
+    function updateSlider() {
+      slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('opacity-100', index === currentSlide);
+        dot.classList.toggle('opacity-50', index !== currentSlide);
+      });
+    }
+    
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        currentSlide = index;
+        updateSlider();
+      });
+    });
+    
+    setInterval(() => {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      updateSlider();
+    }, 4000);
+    
+    updateSlider();
+  }
+
+  // ========== Favorites & Cart System ==========
+  let favorites = JSON.parse(localStorage.getItem('favorites')) || {};
+  let cartItems = JSON.parse(localStorage.getItem('cartItems')) || {};
+  
+  // Initialize UI
+  updateFavoriteUI();
+  updateCartUI();
+  
+  // Handle product favorite buttons
+  document.querySelectorAll('.product-favorite-btn').forEach(button => {
+    const productCard = button.closest('[data-product-id]');
+    if (!productCard) return;
+    
+    const productId = productCard.dataset.productId;
+    const productName = productCard.querySelector('h4')?.textContent || '';
+    const productPrice = productCard.querySelector('.text-lg')?.textContent || '';
+    const productImage = productCard.querySelector('img')?.src || '';
+    
+    // Update button state if product is already favorited
+    if (favorites[productId]) {
+      button.innerHTML = '<i class="ri-heart-fill text-red-500"></i>';
+    }
+    
+    button.addEventListener('click', function() {
+      if (favorites[productId]) {
+        delete favorites[productId];
+        button.innerHTML = '<i class="ri-heart-line text-gray-600"></i>';
+      } else {
+        favorites[productId] = { 
+          name: productName, 
+          price: productPrice, 
+          image: productImage 
+        };
+        button.innerHTML = '<i class="ri-heart-fill text-red-500"></i>';
+      }
+      
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+      updateFavoriteUI();
+    });
+  });
+  
+  // Handle add to cart buttons
+  document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+    const productCard = button.closest('[data-product-id]');
+    if (!productCard) return;
+    
+    const productId = productCard.dataset.productId;
+    const productName = productCard.querySelector('h4')?.textContent || '';
+    const productPrice = productCard.querySelector('.text-lg')?.textContent || '';
+    const productImage = productCard.querySelector('img')?.src || '';
+    
+    button.addEventListener('click', function() {
+      if (cartItems[productId]) {
+        cartItems[productId].quantity += 1;
+      } else {
+        cartItems[productId] = {
+          name: productName,
+          price: productPrice,
+          image: productImage,
+          quantity: 1
+        };
+      }
+      
+      localStorage.setItem('cartItems', JSON.stringify(cartItems));
+      updateCartUI();
+      
+      // Show cart dropdown
+      if (cartDropdown) {
+        cartDropdown.classList.remove('hidden');
+      }
+    });
+  });
+
+  // Update favorite UI
+  function updateFavoriteUI() {
+    const favoriteCount = document.getElementById('favorite-count');
+    const favoriteIcon = document.querySelector('#favorite-button i');
+    const favoriteItemsContainer = document.getElementById('favorite-items');
+    
+    const favoriteCountValue = Object.keys(favorites).length;
+    if (favoriteCount) favoriteCount.textContent = favoriteCountValue;
+    
+    if (favoriteCountValue > 0) {
+      if (favoriteCount) favoriteCount.classList.remove('hidden');
+      if (favoriteIcon) {
+        favoriteIcon.classList.remove('ri-heart-line');
+        favoriteIcon.classList.add('ri-heart-fill', 'text-red-500');
+      }
+      
+      if (favoriteItemsContainer) {
+        favoriteItemsContainer.innerHTML = '';
+        Object.entries(favorites).forEach(([id, product]) => {
+          const favoriteItem = document.createElement('div');
+          favoriteItem.className = 'flex items-center justify-between p-2 hover:bg-gray-50 rounded';
+          favoriteItem.innerHTML = `
+            <div class="flex items-center space-x-3">
+              <img src="${product.image}" alt="${product.name}" class="w-10 h-10 object-cover rounded">
+              <div>
+                <h5 class="text-sm font-medium">${product.name}</h5>
+                <p class="text-xs text-gray-600">${product.price}</p>
+              </div>
+            </div>
+            <button class="remove-favorite text-gray-400 hover:text-red-500" data-id="${id}">
+              <i class="ri-close-line"></i>
+            </button>
+          `;
+          favoriteItemsContainer.appendChild(favoriteItem);
+        });
+        
+        // Add event listeners to remove buttons
+        document.querySelectorAll('.remove-favorite').forEach(button => {
+          button.addEventListener('click', function() {
+            const productId = this.dataset.id;
+            delete favorites[productId];
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateFavoriteUI();
+            
+            // Update the product card heart icon
+            const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+            if (productCard) {
+              productCard.querySelector('.product-favorite-btn').innerHTML = '<i class="ri-heart-line text-gray-600"></i>';
+            }
+          });
+        });
+      }
+    } else {
+      if (favoriteCount) favoriteCount.classList.add('hidden');
+      if (favoriteIcon) {
+        favoriteIcon.classList.remove('ri-heart-fill', 'text-red-500');
+        favoriteIcon.classList.add('ri-heart-line');
+      }
+      if (favoriteItemsContainer) {
+        favoriteItemsContainer.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">No favorite items yet</p>';
+      }
+    }
+  }
+
+  // Update cart UI
+  function updateCartUI() {
+    const cartCount = document.getElementById('cart-count');
+    const cartItemsContainer = document.getElementById('cart-items');
+    
+    const cartCountValue = Object.values(cartItems).reduce((total, item) => total + item.quantity, 0);
+    if (cartCount) cartCount.textContent = cartCountValue;
+    
+    if (cartItemsContainer) {
+      if (cartCountValue > 0) {
+        cartItemsContainer.innerHTML = '';
+        let total = 0;
+        
+        Object.entries(cartItems).forEach(([id, product]) => {
+          const itemTotal = parseFloat(product.price.replace('₹', '')) * product.quantity;
+          total += itemTotal;
+          
+          const cartItem = document.createElement('div');
+          cartItem.className = 'flex items-center justify-between p-2 hover:bg-gray-50 rounded';
+          cartItem.innerHTML = `
+            <div class="flex items-center space-x-3">
+              <img src="${product.image}" alt="${product.name}" class="w-10 h-10 object-cover rounded">
+              <div>
+                <h5 class="text-sm font-medium">${product.name}</h5>
+                <p class="text-xs text-gray-600">${product.price} × ${product.quantity}</p>
+              </div>
+            </div>
+            <button class="remove-cart-item text-gray-400 hover:text-red-500" data-id="${id}">
+              <i class="ri-close-line"></i>
+            </button>
+          `;
+          cartItemsContainer.appendChild(cartItem);
+        });
+        
+        // Add total and checkout button
+        const totalElement = document.createElement('div');
+        totalElement.className = 'flex justify-between items-center mt-3 pt-3 border-t border-gray-200';
+        totalElement.innerHTML = `
+          <span class="text-sm font-medium">Total:</span>
+          <span class="text-sm font-bold">₹${total.toFixed(2)}</span>
+        `;
+        cartItemsContainer.appendChild(totalElement);
+        
+        // Add event listeners to remove buttons
+        document.querySelectorAll('.remove-cart-item').forEach(button => {
+          button.addEventListener('click', function() {
+            const productId = this.dataset.id;
+            delete cartItems[productId];
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            updateCartUI();
+          });
+        });
+      } else {
+        cartItemsContainer.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">Your cart is empty</p>';
+      }
+    }
+  }
+
+  // ========== Navigation ==========
+  const navLinks = document.querySelectorAll('#side-nav a');
+  const sections = document.querySelectorAll('main > section');
+  
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href').substring(1);
+      
+      // Hide all sections
+      sections.forEach(section => {
+        section.classList.add('hidden');
+      });
+      
+      // Show target section
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) targetSection.classList.remove('hidden');
+      
+      // Close side nav
+      if (sideNav) sideNav.classList.add('-translate-x-full');
+    });
+  });
+  
+  // Show home section by default
+  const homeSection = document.getElementById('home');
+  if (homeSection) homeSection.classList.remove('hidden');
+});
+</script>
+
+// ========== Script End ==========
+</body>
+</html>
+
+
