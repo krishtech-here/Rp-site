@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Cart - RICEMAKERS</title>
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+  <style>
+    .rounded-button {
+      border-radius: 8px;
+    }
+    .quantity-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <nav class="bg-white shadow-sm p-4 flex justify-between items-center">
+    <a href="ricemakers_page_.html" class="text-xl font-bold text-primary">RICEMAKERS</a>
+    <div class="flex items-center space-x-4">
+      <a href="favorites.html" class="relative">
+        <i class="ri-heart-line text-xl text-gray-700"></i>
+        <span id="favorite-count" class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="p-4 pb-20">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">My Cart</h1>
+    
+    <div id="cart-items-container" class="space-y-4">
+      <!-- Cart items will be inserted here -->
+    </div>
+    
+    <div id="empty-state" class="text-center py-12 hidden">
+      <i class="ri-shopping-cart-line text-4xl text-gray-300 mb-4"></i>
+      <h2 class="text-lg font-medium text-gray-600">Your cart is empty</h2>
+      <p class="text-gray-500 mt-2">Add some products to your cart</p>
+      <a href="ricemakers_page_.html" class="inline-block mt-4 bg-primary text-white px-6 py-2 rounded-button">Browse Products</a>
+    </div>
+    
+    <div id="cart-summary" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg hidden">
+      <div class="flex justify-between mb-3">
+        <span class="font-medium">Subtotal</span>
+        <span id="subtotal" class="font-bold">₹0</span>
+      </div>
+      <div class="flex justify-between mb-4">
+        <span class="font-medium">Delivery</span>
+        <span id="delivery" class="font-bold">₹0</span>
+      </div>
+      <div class="flex justify-between text-lg font-bold mb-4">
+        <span>Total</span>
+        <span id="total">₹0</span>
+      </div>
+      <button id="checkout-btn" class="w-full bg-primary text-white py-3 rounded-button font-medium">
+        Proceed to Checkout
+      </button>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const cartContainer = document.getElementById('cart-items-container');
+      const emptyState = document.getElementById('empty-state');
+      const cartSummary = document.getElementById('cart-summary');
+      const favoriteCount = document.getElementById('favorite-count');
+      
+      // Load cart and favorites data
+      let cartItems = JSON.parse(localStorage.getItem('cartItems')) || {};
+      const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+      
+      // Update favorite count
+      favoriteCount.textContent = favorites.length;
+      if (favorites.length > 0) {
+        favoriteCount.classList.remove('hidden');
+      }
+      
+      // Render cart items
+      renderCartItems();
+      
+      function renderCartItems() {
+        cartContainer.innerHTML = '';
+        
+        if (Object.keys(cartItems).length === 0) {
+          emptyState.classList.remove('hidden');
+          cartSummary.classList.add('hidden');
+          return;
+        }
+        
+        emptyState.classList.add('hidden');
+        cartSummary.classList.remove('hidden');
+        
+        let subtotal = 0;
+        
+        Object.entries(cartItems).forEach(([id, item]) => {
+          const price = parseFloat(item.price.replace('₹', ''));
+          const itemTotal = price * item.quantity;
+          subtotal += itemTotal;
+          
+          const cartItem = document.createElement('div');
+          cartItem.className = 'bg-white rounded-lg shadow-sm p-3';
+          cartItem.innerHTML = `
+            <div class="flex">
+              <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded">
+              <div class="ml-3 flex-1">
+                <div class="flex justify-between">
+                  <h3 class="font-medium text-gray-800">${item.name}</h3>
+                  <button class="remove-item text-gray-400 hover:text-red-500" data-id="${id}">
+                    <i class="ri-close-line"></i>
+                  </button>
+                </div>
+                <p class="text-primary font-bold my-1">${item.price}</p>
+                <div class="flex items-center justify-between mt-2">
+                  <div class="flex items-center border border-gray-200 rounded">
+                    <button class="quantity-btn decrease" data-id="${id}">-</button>
+                    <span class="px-3 quantity">${item.quantity}</span>
+                    <button class="quantity-btn increase" data-id="${id}">+</button>
+                  </div>
+                  <span class="font-medium item-total">₹${itemTotal.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+          `;
+          cartContainer.appendChild(cartItem);
+        });
+        
+        // Update summary
+        const deliveryFee = subtotal > 500 ? 0 : 40;
+        const total = subtotal + deliveryFee;
+        
+        document.getElementById('subtotal').textContent = `₹${subtotal.toFixed(2)}`;
+        document.getElementById('delivery').textContent = deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`;
+        document.getElementById('total').textContent = `₹${total.toFixed(2)}`;
+        
+        // Add event listeners
+        addEventListeners();
+      }
+      
+      function addEventListeners() {
+        // Remove item
+        document.querySelectorAll('.remove-item').forEach(button => {
+          button.addEventListener('click', function() {
+            const productId = this.dataset.id;
+            delete cartItems[productId];
+            updateCart();
+          });
+        });
+        
+        // Decrease quantity
+        document.querySelectorAll('.decrease').forEach(button => {
+          button.addEventListener('click', function() {
+            const productId = this.dataset.id;
+            if (cartItems[productId].quantity > 1) {
+              cartItems[productId].quantity -= 1;
+            } else {
+              delete cartItems[productId];
+            }
+            updateCart();
+          });
+        });
+        
+        // Increase quantity
+        document.querySelectorAll('.increase').forEach(button => {
+          button.addEventListener('click', function() {
+            const productId = this.dataset.id;
+            cartItems[productId].quantity += 1;
+            updateCart();
+          });
+        });
+        
+        // Checkout button
+        document.getElementById('checkout-btn').addEventListener('click', function() {
+          alert('Proceeding to checkout!');
+          // In a real app, you would redirect to checkout page
+        });
+      }
+      
+      function updateCart() {
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        renderCartItems();
+      }
+    });
+  </script>
+</body>
+</html>
+=======
+<!-- cart.html -->
+<div id="cart-section">
+  <button id="cart-button" class="w-8 h-8 flex items-center justify-center relative cursor-pointer">
+    <i class="ri-shopping-cart-line text-xl text-gray-700"></i>
+    <span id="cart-count" class="absolute -top-1 -right-1 bg-secondary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+  </button>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const cartButton = document.getElementById('cart-button');
+  const cartCount = document.getElementById('cart-count');
+  let cartItems = 0;
+
+  // Load cart count from localStorage
+  if (localStorage.getItem('cartItems')) {
+    cartItems = parseInt(localStorage.getItem('cartItems'));
+    updateCartCount();
+  }
+
+  // This would be called when "Add to Cart" is clicked on products
+  function addToCart() {
+    cartItems++;
+    localStorage.setItem('cartItems', cartItems);
+    updateCartCount();
+  }
+
+  function updateCartCount() {
+    cartCount.textContent = cartItems;
+    if (cartItems > 0) {
+      cartCount.classList.remove('hidden');
+    } else {
+      cartCount.classList.add('hidden');
+    }
+  }
+
+  // Example of how to call addToCart from product buttons
+  document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+    button.addEventListener('click', addToCart);
+  });
+
+  // Cart button click handler
+  cartButton.addEventListener('click', function() {
+    // Here you would typically show a cart modal or navigate to cart page
+    console.log('Cart clicked with', cartItems, 'items');
+    // For now, we'll just show an alert
+    alert(`You have ${cartItems} items in your cart`);
+  });
+});
+</script>

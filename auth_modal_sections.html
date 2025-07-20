@@ -1,0 +1,102 @@
+<div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+<div id="modal-content" class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl transform translate-y-full transition-transform duration-300 ease-in-out max-h-[80vh] overflow-y-auto">
+<div class="p-6">
+<div class="flex justify-end mb-4">
+<button id="close-auth-modal" class="w-8 h-8 flex items-center justify-center">
+<i class="ri-close-line text-2xl text-gray-700"></i>
+</button>
+</div>
+<!-- Login Section -->
+<div id="login-section">
+<h2 class="text-2xl font-bold text-gray-800 mb-6">Welcome Back!</h2>
+<form class="space-y-4">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+<input type="text" class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Enter your username">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+<input type="password" class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Enter your password">
+</div>
+<div class="flex justify-end">
+<button type="button" class="text-sm text-primary">Forgot Password?</button>
+</div>
+<button type="button" class="w-full bg-primary text-white py-3 rounded-button font-medium">Login</button>
+</form>
+<div class="mt-6 text-center">
+<p class="text-gray-600">Don't have an account?</p>
+<button id="show-register" class="mt-2 text-primary font-medium">Create New Account</button>
+</div>
+</div>
+<!-- Registration Section -->
+<div id="register-section" class="hidden">
+<h2 class="text-2xl font-bold text-gray-800 mb-6">Create Account</h2>
+<form class="space-y-4">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+<input type="text" class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Enter your first name">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+<input type="text" class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Enter your last name">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+<div class="flex items-center space-x-2">
+<input type="tel" id="phone-input" class="flex-1 px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Enter your phone number">
+<button type="button" id="edit-phone" class="hidden w-8 h-8 flex items-center justify-center text-gray-500">
+<i class="ri-edit-line"></i>
+</button>
+</div>
+</div>
+<button type="button" id="send-otp-btn" class="w-full bg-primary text-white py-3 rounded-button font-medium">Send OTP</button>
+</form>
+<div class="mt-6 text-center">
+<p class="text-gray-600">Already have an account?</p>
+<button id="show-login" class="mt-2 text-primary font-medium">Login Here</button>
+</div>
+</div>
+<!-- OTP Verification Section -->
+<div id="otp-section" class="hidden">
+<h2 class="text-2xl font-bold text-gray-800 mb-4">Verify OTP</h2>
+<p class="text-gray-600 mb-2">Enter the OTP sent to</p>
+<div class="flex items-center mb-6">
+<span id="display-phone" class="font-medium text-gray-800"></span>
+<button id="change-number" class="ml-2 text-primary">
+<i class="ri-edit-line"></i>
+</button>
+</div>
+<form class="space-y-6">
+<div class="flex justify-between">
+<input type="text" maxlength="1" class="w-12 h-12 text-center border border-gray-200 rounded-button focus:outline-none focus:border-primary text-xl font-bold">
+<input type="text" maxlength="1" class="w-12 h-12 text-center border border-gray-200 rounded-button focus:outline-none focus:border-primary text-xl font-bold">
+<input type="text" maxlength="1" class="w-12 h-12 text-center border border-gray-200 rounded-button focus:outline-none focus:border-primary text-xl font-bold">
+<input type="text" maxlength="1" class="w-12 h-12 text-center border border-gray-200 rounded-button focus:outline-none focus:border-primary text-xl font-bold">
+</div>
+<div class="text-center">
+<div id="timer" class="text-sm text-gray-500 mb-2">Time remaining: <span>02:00</span></div>
+<button type="button" id="resend-otp" class="text-primary text-sm" disabled>Resend OTP</button>
+</div>
+<button type="button" id="verify-otp-btn" class="w-full bg-primary text-white py-3 rounded-button font-medium">Verify & Continue</button>
+</form>
+</div>
+<!-- Location Section -->
+<div id="location-section" class="hidden">
+<h2 class="text-2xl font-bold text-gray-800 mb-6">Delivery Location</h2>
+<form class="space-y-4">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Location Title</label>
+<input type="text" class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="e.g. Home, Office">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+<textarea class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" rows="3" placeholder="Enter your delivery address"></textarea>
+</div>
+<button type="button" id="fetch-location" class="w-full bg-gray-100 text-gray-700 py-3 rounded-button font-medium mb-2">
+<i class="ri-map-pin-line mr-2"></i>Use Current Location
+</button>
+<button type="button" id="submit-location" class="w-full bg-primary text-white py-3 rounded-button font-medium">Submit</button>
+</form>
+</div>
+</div>
+</div>

@@ -1,0 +1,53 @@
+<!-- favicon.html -->
+<div id="favorite-section">
+  <button id="favorite-button" class="w-8 h-8 flex items-center justify-center cursor-pointer">
+    <i class="ri-heart-line text-xl text-gray-700"></i>
+    <span id="favorite-count" class="hidden absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+  </button>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const favoriteButton = document.getElementById('favorite-button');
+  const favoriteIcon = favoriteButton.querySelector('i');
+  const favoriteCount = document.getElementById('favorite-count');
+  let isFavorite = false;
+  let favorites = 0;
+
+  // Load favorite state from localStorage
+  if (localStorage.getItem('isFavorite')) {
+    isFavorite = localStorage.getItem('isFavorite') === 'true';
+    updateFavoriteIcon();
+  }
+
+  favoriteButton.addEventListener('click', function() {
+    isFavorite = !isFavorite;
+    localStorage.setItem('isFavorite', isFavorite);
+    
+    if (isFavorite) {
+      favorites++;
+      favoriteCount.textContent = favorites;
+      favoriteCount.classList.remove('hidden');
+    } else {
+      favorites = Math.max(0, favorites - 1);
+      if (favorites === 0) {
+        favoriteCount.classList.add('hidden');
+      } else {
+        favoriteCount.textContent = favorites;
+      }
+    }
+    
+    updateFavoriteIcon();
+  });
+
+  function updateFavoriteIcon() {
+    if (isFavorite) {
+      favoriteIcon.classList.remove('ri-heart-line');
+      favoriteIcon.classList.add('ri-heart-fill', 'text-red-500');
+    } else {
+      favoriteIcon.classList.remove('ri-heart-fill', 'text-red-500');
+      favoriteIcon.classList.add('ri-heart-line');
+    }
+  }
+});
+</script>

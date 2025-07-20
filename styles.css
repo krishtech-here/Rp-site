@@ -1,0 +1,6 @@
+#login-modal > div, #profile-modal > div {
+  transform: translateY(100%);
+}
+#login-modal > div.translate-y-0, #profile-modal > div.translate-y-0 {
+  transform: translateY(0);
+}
